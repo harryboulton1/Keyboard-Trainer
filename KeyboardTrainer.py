@@ -134,7 +134,6 @@ class GuessButton:
 
 class Ex1:
     def __init__(self):
-        self.name = "Exercise 1"
         self.buttons = []
 
         w = width        #Screen Width
@@ -168,29 +167,27 @@ class Ex1:
         self.score = "Score:  "+str(self.correct)+" / "+str(self.iterations)
         self.scoreboard = user_canvas.create_text(*self.scoreboardloc, text=self.score, font=("Times", 28), anchor="e", fill="grey10")
 
-        self.cont()
+        self.loop()
 
     def guess(self, comparator, event=None):
-        print(comparator, self.note.name, self.note.name.replace("#","s").lower()[:-1])
         if comparator == self.note.name.replace("#","s").lower()[:-1]:
             self.correct += 1
 
         keyboard_canvas.itemconfig(self.note.key, fill='white' if self.note in white_notes else 'black')
         self.iterations += 1
         self.update_score()
-        self.cont()
+        self.loop()
 
     def update_score(self):
         self.score = "Score:  "+str(self.correct)+" / "+str(self.iterations)
         user_canvas.itemconfig(self.scoreboard, text=self.score)
             
-    def cont(self):
+    def loop(self):
         self.note = random.choice(all_notes)
         keyboard_canvas.itemconfig(self.note.key, fill='red')
 
 class Ex4:
     def __init__(self):
-        self.name = "Exercise 4"
         self.coords = []
         self.buttons = []
         self.note1 = self.note2 = None
@@ -248,9 +245,7 @@ class Ex4:
             user_canvas.tag_bind(self.compbutton.rect, "<Leave>", lambda e: user_canvas.itemconfig(self.compbutton.rect, fill="#b7b7b7"))        
 
         root.update()
-        
-        print(self.compbutton_state) ########=-=-=-=-=-=-=-=-=
-        
+            
     def run(self):        
         keyboard_canvas.create_rectangle(0, 0, width, height/2, fill='', outline='', tag='blank')
         self.buttons.append(GuessButton(self, "Comp.", (self.coords["Comp."]), self.toggle_compbutton_state, (), 24,))
@@ -263,7 +258,7 @@ class Ex4:
         self.iterations = 0
         self.score = "Score:  "+str(self.correct)+" / "+str(self.iterations)
         self.scoreboard = user_canvas.create_text(*self.scoreboardloc, text=self.score, font=("Times", 28), anchor="e", fill="grey10")
-        self.cont()
+        self.loop()
 
     def guess(self, *args):
         self.iterations += 1
@@ -277,14 +272,14 @@ class Ex4:
                 guess = True
                 self.correct+=1
             
-        self.cont()
+        self.loop()
     
     def update_score(self):
         self.score = "Score:  "+str(self.correct)+" / "+str(self.iterations)
         user_canvas.itemconfig(self.scoreboard, text=self.score)
         root.update()
 
-    def cont(self):
+    def loop(self):
         self.update_score()
         user_canvas.itemconfig(self.buttons[0].rect, fill='#b7b7b7')
         root.update()
