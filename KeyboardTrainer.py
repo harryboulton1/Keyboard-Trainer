@@ -28,6 +28,7 @@ def main_menu(event=None):
         keyboard_canvas.itemconfig(whitenote.key, fill="white")
     for blacknote in black_notes:
         keyboard_canvas.itemconfig(blacknote.key, fill="black")
+    keyboard_canvas.delete('blank')
     gen_menu_button()
 
     #Generate exercise buttons
@@ -115,13 +116,13 @@ def start(exercise):
     exercise.run()
     
 class GuessButton:
-    def __init__(self, name, coords, comparator, func, args):
+    def __init__(self, name, coords, func, args, text_size):
         self.rect = round_rectangle(*coords, fill='#b7b7b7')
         self.centre = (((coords[0]+coords[2])/2),((coords[1]+coords[3])/2))
-        self.text = user_canvas.create_text(*self.centre, text=name, font=("Times", 36), anchor="c", fill="grey10")
+        self.text = user_canvas.create_text(*self.centre, text=name, font=("Times", text_size), anchor="c", fill="grey10", width=width*0.071, justify='center')
         user_canvas.tag_bind(self.rect, "<Enter>", lambda e: user_canvas.itemconfig(self.rect, fill="#d3d3d3"))
         user_canvas.tag_bind(self.rect, "<Leave>", lambda e: user_canvas.itemconfig(self.rect, fill="#b7b7b7"))
-        user_canvas.tag_bind(self.rect, "<Button-1>", lambda e, f=func, a=args: f(*args))
+        user_canvas.tag_bind(self.rect, "<Button-1>", lambda e, f=func, a=args: f(*a))
 
 
 #        user_canvas.tag_bind(self.rect, "<Button-1>", lambda e: some_fucntiion))
@@ -149,17 +150,19 @@ class Ex1:
                        note_names[10]: (w*0.71, h*0.9-d-l, w*0.71+l, h*0.9-d),
                        note_names[11]: (w*0.815, h*0.9-d-l, w*0.815+l, h*0.9-d)}
 
+        self.score = 0
+        self.scoreboardloc = (self.coords[note_names[11]][-2], h*0.562-d)
+        self.comparators = ["c","d","e","f","g","a","b","cs","ds","fs","gs","as"] #Note Comparators
+        
+    def run(self, event=None):
+        keyboard_canvas.create_rectangle(0, 0, width, height/2, fill='', outline='', tag='blank')
+        for i, n in enumerate(note_names):
+            self.buttons.append(GuessButton(n, self.coords[n], self.guess, self.comparators[i], 36))
+
         self.correct = 0
         self.iterations = 0
         self.score = "Score:  "+str(self.correct)+" / "+str(self.iterations)
-        self.scoreboardloc = (self.coords[note_names[11]][-2], h*0.562-d)
-        self.comparators = ["c","d","e","f","g","a","b","cs","ds","fs","gs","as"] #Note Comparators
-
-    def run(self, event=None):
         self.scoreboard = user_canvas.create_text(*self.scoreboardloc, text=self.score, font=("Times", 28), anchor="e", fill="grey10")
-
-        for i, n in enumerate(note_names):
-            self.buttons.append(GuessButton(n, self.coords[n], self.comparators[i]))
 
         self.cont()
 
@@ -180,34 +183,6 @@ class Ex1:
     def cont(self):
         self.note = random.choice(all_notes)
         keyboard_canvas.itemconfig(self.note.key, fill='red')
-
-
-
-
-
-def ex4(event=None):
-    user_canvas.delete('all')
-    gen_menu_button()
-    
-
-    il = interval_list
-    
-    w = width        #Screen Width
-    h = height       #Screen Height
-    d = height/2     #Vertical Displacement
-    l = w*0.078      #Square Size
-    ex4_coords = {il[0]: (w*0.292, h*0.6-d, w*0.292+l, h*0.6-d+l),
-                  il[1]: (w*0.398, h*0.6-d, w*0.398+l, h*0.6-d+l),
-                  il[2]: (w*0.502, h*0.6-d, w*0.502+l, h*0.6-d+l),
-                  il[3]: (w*0.605, h*0.6-d, w*0.605+l, h*0.6-d+l),
-                  il[4]: (w*0.71, h*0.6-d, w*0.71+l, h*0.6-d+l),
-                  il[5]: (w*0.815, h*0.6-d, w*0.815+l, h*0.6-d+l),
-                  il[6]: (w*0.292, h*0.9-d-l, w*0.292+l, h*0.9-d),
-                  il[7]: (w*0.398, h*0.9-d-l, w*0.398+l, h*0.9-d),
-                  il[8]: (w*0.502, h*0.9-d-l, w*0.502+l, h*0.9-d),
-                  il[9]: (w*0.605, h*0.9-d-l, w*0.605+l, h*0.9-d),
-                  il[10]: (w*0.71, h*0.9-d-l, w*0.71+l, h*0.9-d),
-                  il[11]: (w*0.815, h*0.9-d-l, w*0.815+l, h*0.9-d)}
 
 class Ex4:
     def __init__(self):
@@ -233,43 +208,64 @@ class Ex4:
         w = width        #Screen Width
         h = height       #Screen Height
         d = height/2     #Vertical Displacement
-        l = w*0.078      #Square Size
-        self.coords = {"Comp.": (w*x, h*x-d, w*x+l, h+x+l)
-                      il[0]: (w*0.292, h*0.6-d, w*0.292+l, h*0.6-d+l),
-                      il[1]: (w*0.398, h*0.6-d, w*0.398+l, h*0.6-d+l),
-                      il[2]: (w*0.502, h*0.6-d, w*0.502+l, h*0.6-d+l),
-                      il[3]: (w*0.605, h*0.6-d, w*0.605+l, h*0.6-d+l),
-                      il[4]: (w*0.71, h*0.6-d, w*0.71+l, h*0.6-d+l),
-                      il[5]: (w*0.815, h*0.6-d, w*0.815+l, h*0.6-d+l),
-                      il[6]: (w*0.292, h*0.9-d-l, w*0.292+l, h*0.9-d),
-                      il[7]: (w*0.398, h*0.9-d-l, w*0.398+l, h*0.9-d),
-                      il[8]: (w*0.502, h*0.9-d-l, w*0.502+l, h*0.9-d),
-                      il[9]: (w*0.605, h*0.9-d-l, w*0.605+l, h*0.9-d),
-                      il[10]: (w*0.71, h*0.9-d-l, w*0.71+l, h*0.9-d),
-                      il[11]: (w*0.815, h*0.9-d-l, w*0.815+l, h*0.9-d),
-                      il[12]: (w*0.815, h*0.9-d-l, w*0.815+l, h*0.9-d)}
+        l = w*0.071      #Square Size
+        363-292
+        self.coords = {"Comp.": (w*0.292, h*0.6-d, w*0.292+l, h*0.6-d+l),
+                      self.il[0]: (w*0.383, h*0.6-d, w*0.383+l, h*0.6-d+l),
+                      self.il[1]: (w*0.472, h*0.6-d, w*0.472+l, h*0.6-d+l),
+                      self.il[2]: (w*0.560, h*0.6-d, w*0.560+l, h*0.6-d+l),
+                      self.il[3]: (w*0.650, h*0.6-d, w*0.650+l, h*0.6-d+l),
+                      self.il[4]: (w*0.739, h*0.6-d, w*0.739+l, h*0.6-d+l),
+                      self.il[5]: (w*0.827, h*0.6-d, w*0.827+l, h*0.6-d+l),
+                      self.il[6]: (w*0.292, h*0.9-d-l, w*0.292+l, h*0.9-d),
+                      self.il[7]: (w*0.383, h*0.9-d-l, w*0.383+l, h*0.9-d),
+                      self.il[8]: (w*0.472, h*0.9-d-l, w*0.472+l, h*0.9-d),
+                      self.il[9]: (w*0.560, h*0.9-d-l, w*0.560+l, h*0.9-d),
+                      self.il[10]: (w*0.650, h*0.9-d-l, w*0.650+l, h*0.9-d),
+                      self.il[11]: (w*0.739, h*0.9-d-l, w*0.739+l, h*0.9-d),
+                      self.il[12]: (w*0.827, h*0.9-d-l, w*0.827+l, h*0.9-d)}
 
+        self.compbutton_state = False
+
+    def toggle_compbutton_state(self):
+        self.compbutton_state = not self.compbutton_state
+        print(self.compbutton_state) ########=-=-=-=-=-=-=-=-=
+        
     def run(self):
 
+        keyboard_canvas.create_rectangle(0, 0, width, height/2, fill='', outline='', tag='blank')
+        self.buttons.append(GuessButton("Comp.", (self.coords["Comp."]), self.toggle_compbutton_state, (), 24))
+        self.compbutton = self.buttons[0]
+        
+        for i, n in enumerate(self.il):
+            self.buttons.append(GuessButton(n, self.coords[n], self.guess, ((self.interval_list[i])), 26))
+        root.update()
+        
         self.note1, self.note2 = random.sample(all_notes, 2)
-        self.interval = abs(self.note1.pos-self.note2.pos)
-        if self.interval <= 12:
-            self.interval = self.interval_list[self.interval]
+        self.interval_num = abs(self.note1.pos-self.note2.pos)
+        if self.interval_num <= 12:
+            self.interval = self.interval_list[self.interval_num]
         else:
-            self.interval = self.interval_list[self.interval-12]
+            self.interval = self.interval_list[self.interval_num-12]
 
         self.note1.play()
         self.note2.play()
     
         print(self.interval)
-        
-def ex5(event=None):
-    user_canvas.delete('all')
-    gen_menu_button()
 
-def ex6(event=None):
-    user_canvas.delete('all')
-    gen_menu_button()
+    def guess(self, *args):
+        self.guess = "".join(c for c in args)
+        if self.interval_num <= 12:
+            if self.guess == self.interval and self.compbutton_state == False:
+                self.correct = True
+            else:
+                self.correct = False
+        else:
+            if self.guess == self.interval and self.compbutton_state == True:
+                self.correct == True               
+            else:
+                self.correct == False
+        
 
 def run(exercise):
     exercise.run()
@@ -300,7 +296,6 @@ if __name__ == "__main__":
 ##    ex4 = Ex4()
 ##    ex5 = Ex5()
 ##    ex6 = Ex6()
-
 
     
     #Keyboard Body Dimentions
