@@ -19,8 +19,6 @@ def gen_menu_button():
     user_canvas.tag_bind(menu_button, "<Enter>", lambda e: user_canvas.itemconfig(menu_button, fill="#d3d3d3"))
     user_canvas.tag_bind(menu_button, "<Leave>", lambda e: user_canvas.itemconfig(menu_button, fill="#b7b7b7"))
     user_canvas.tag_bind(menu_button, "<Button-1>", main_menu)
-
-    root.update()
     
 def main_menu(event=None):
     user_canvas.delete('all')
@@ -105,6 +103,7 @@ def main_menu(event=None):
     user_canvas.tag_bind(keyboard_button, "<Leave>", lambda e: user_canvas.itemconfig(keyboard_button, fill="#b7b7b7"))
     user_canvas.tag_bind(keyboard_button, "<Button-1>", kb_only)
     
+    ex4.buttons = []
 
 def kb_only(event=None):
     user_canvas.delete('all')
@@ -116,14 +115,18 @@ def start(exercise):
     exercise.run()
     
 class GuessButton:
-    def __init__(self, name, coords, func, args, text_size):
+    def __init__(self, exercise, name, coords, func, args, text_size):
         self.rect = round_rectangle(*coords, fill='#b7b7b7')
         self.centre = (((coords[0]+coords[2])/2),((coords[1]+coords[3])/2))
         self.text = user_canvas.create_text(*self.centre, text=name, font=("Times", text_size), anchor="c", fill="grey10", width=width*0.071, justify='center')
         user_canvas.tag_bind(self.rect, "<Enter>", lambda e: user_canvas.itemconfig(self.rect, fill="#d3d3d3"))
         user_canvas.tag_bind(self.rect, "<Leave>", lambda e: user_canvas.itemconfig(self.rect, fill="#b7b7b7"))
-        user_canvas.tag_bind(self.rect, "<Button-1>", lambda e, f=func, a=args: f(*a))
+        if exercise == ex1:
+            user_canvas.tag_bind(self.rect, "<Button-1>", lambda e: func(args))
+        if exercise == ex4:
+            user_canvas.tag_bind(self.rect, "<Button-1>", lambda e: func(*args))
 
+        
 
 #        user_canvas.tag_bind(self.rect, "<Button-1>", lambda e: some_fucntiion))
 
@@ -131,6 +134,7 @@ class GuessButton:
 
 class Ex1:
     def __init__(self):
+        self.name = "Exercise 1"
         self.buttons = []
 
         w = width        #Screen Width
@@ -157,7 +161,7 @@ class Ex1:
     def run(self, event=None):
         keyboard_canvas.create_rectangle(0, 0, width, height/2, fill='', outline='', tag='blank')
         for i, n in enumerate(note_names):
-            self.buttons.append(GuessButton(n, self.coords[n], self.guess, self.comparators[i], 36))
+            self.buttons.append(GuessButton(self, n, self.coords[n], self.guess, self.comparators[i], 36))
 
         self.correct = 0
         self.iterations = 0
@@ -167,14 +171,14 @@ class Ex1:
         self.cont()
 
     def guess(self, comparator, event=None):
-       if comparator == self.note.name.replace("#","s").lower()[:-1]:
-           self.correct += 1
+        print(comparator, self.note.name, self.note.name.replace("#","s").lower()[:-1])
+        if comparator == self.note.name.replace("#","s").lower()[:-1]:
+            self.correct += 1
 
-       keyboard_canvas.itemconfig(self.note.key, fill='white' if self.note in white_notes else 'black')
-
-       self.iterations += 1
-       self.update_score()
-       self.cont()
+        keyboard_canvas.itemconfig(self.note.key, fill='white' if self.note in white_notes else 'black')
+        self.iterations += 1
+        self.update_score()
+        self.cont()
 
     def update_score(self):
         self.score = "Score:  "+str(self.correct)+" / "+str(self.iterations)
@@ -186,9 +190,11 @@ class Ex1:
 
 class Ex4:
     def __init__(self):
+        self.name = "Exercise 4"
         self.coords = []
         self.buttons = []
         self.note1 = self.note2 = None
+        self.score = 0
         self.interval_list = ["Unison",
                               "Minor 2nd",
                               "Major 2nd",
@@ -225,22 +231,66 @@ class Ex4:
                       self.il[11]: (w*0.739, h*0.9-d-l, w*0.739+l, h*0.9-d),
                       self.il[12]: (w*0.827, h*0.9-d-l, w*0.827+l, h*0.9-d)}
 
+        self.scoreboardloc = (self.coords[self.il[12]][-2], h*0.562-d)
         self.compbutton_state = False
 
     def toggle_compbutton_state(self):
         self.compbutton_state = not self.compbutton_state
+
+        if self.compbutton_state:  #On
+            user_canvas.itemconfig(self.compbutton.rect, fill='#26ff4d')
+            user_canvas.tag_bind(self.compbutton.rect, "<Enter>", lambda e: user_canvas.itemconfig(self.compbutton.rect, fill="#7cff94"))
+            user_canvas.tag_bind(self.compbutton.rect, "<Leave>", lambda e: user_canvas.itemconfig(self.compbutton.rect, fill="#26ff4d"))
+
+        else:   #Off
+            user_canvas.itemconfig(self.compbutton.rect, fill='#b7b7b7')
+            user_canvas.tag_bind(self.compbutton.rect, "<Enter>", lambda e: user_canvas.itemconfig(self.compbutton.rect, fill="#d3d3d3"))
+            user_canvas.tag_bind(self.compbutton.rect, "<Leave>", lambda e: user_canvas.itemconfig(self.compbutton.rect, fill="#b7b7b7"))        
+
+        root.update()
+        
         print(self.compbutton_state) ########=-=-=-=-=-=-=-=-=
         
-    def run(self):
-
+    def run(self):        
         keyboard_canvas.create_rectangle(0, 0, width, height/2, fill='', outline='', tag='blank')
-        self.buttons.append(GuessButton("Comp.", (self.coords["Comp."]), self.toggle_compbutton_state, (), 24))
+        self.buttons.append(GuessButton(self, "Comp.", (self.coords["Comp."]), self.toggle_compbutton_state, (), 24,))
         self.compbutton = self.buttons[0]
         
         for i, n in enumerate(self.il):
-            self.buttons.append(GuessButton(n, self.coords[n], self.guess, ((self.interval_list[i])), 26))
-        root.update()
+            self.buttons.append(GuessButton(self, n, self.coords[n], self.guess, ((self.interval_list[i])), 26))
         
+        self.correct = 0
+        self.iterations = 0
+        self.score = "Score:  "+str(self.correct)+" / "+str(self.iterations)
+        self.scoreboard = user_canvas.create_text(*self.scoreboardloc, text=self.score, font=("Times", 28), anchor="e", fill="grey10")
+        self.cont()
+
+    def guess(self, *args):
+        self.iterations += 1
+        self.user_guess = "".join(c for c in args)
+        if self.interval_num <= 12:
+            if self.user_guess == self.interval and self.compbutton_state == False:
+                self.user_guess = True
+                self.correct+=1
+        else:
+            if self.user_guess == self.interval and self.compbutton_state == True:
+                guess = True
+                self.correct+=1
+            
+        self.cont()
+    
+    def update_score(self):
+        self.score = "Score:  "+str(self.correct)+" / "+str(self.iterations)
+        user_canvas.itemconfig(self.scoreboard, text=self.score)
+        root.update()
+
+    def cont(self):
+        self.update_score()
+        user_canvas.itemconfig(self.buttons[0].rect, fill='#b7b7b7')
+        root.update()
+
+        self.compbutton_state = False
+
         self.note1, self.note2 = random.sample(all_notes, 2)
         self.interval_num = abs(self.note1.pos-self.note2.pos)
         if self.interval_num <= 12:
@@ -250,23 +300,7 @@ class Ex4:
 
         self.note1.play()
         self.note2.play()
-    
-        print(self.interval)
-
-    def guess(self, *args):
-        self.guess = "".join(c for c in args)
-        if self.interval_num <= 12:
-            if self.guess == self.interval and self.compbutton_state == False:
-                self.correct = True
-            else:
-                self.correct = False
-        else:
-            if self.guess == self.interval and self.compbutton_state == True:
-                self.correct == True               
-            else:
-                self.correct == False
         
-
 def run(exercise):
     exercise.run()
 
