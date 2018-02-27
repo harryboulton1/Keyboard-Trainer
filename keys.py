@@ -75,6 +75,10 @@ black_notes = (cs3, ds3, fs3, gs3, as3, cs4, ds4, fs4, gs4, as4)
 note_order = (c3, cs3, d3, ds3, e3, f3, fs3, g3, gs3, a3, as3, b3, c4, cs4,
              d4, ds4, e4, f4, fs4, g4, gs4, a4, as4, b4, c5)
 all_notes = note_order
+note_names = ["C","D","E","F","G","A","B","C#","Eb","F#","G#","Bb"]
+comparators = ["c","d","e","f","g","a","b","cs","ds","fs","gs","as"]
+
+
 
 pos = 1
 for note in all_notes:

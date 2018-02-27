@@ -2,8 +2,6 @@ from tkinter import *
 import tkinter.font as tkFont
 import time, random
 from keys import *
-from exercises import *
-
 
 def round_rectangle(x1, y1, x2, y2, r=25, **kwargs):    
     points = (x1+r, y1, x1+r, y1, x2-r, y1, x2-r, y1, x2, y1, x2, y1+r, x2, y1+r, x2, y2-r, x2, y2-r, x2, y2, x2-r, y2, x2-r, y2, x1+r, y2, x1+r, y2, x1, y2, x1, y2-r, x1, y2-r, x1, y1+r, x1, y1+r, x1, y1)
@@ -42,7 +40,7 @@ def main_menu(event=None):
     ex1_text = user_canvas.create_text(width*0.48, (height*0.671)-d, text="Exercise 1", font=("Nueva Std", 28), anchor="c", fill="grey10")
     user_canvas.tag_bind(ex1_button, "<Enter>", lambda e: user_canvas.itemconfig(ex1_button, fill="#d3d3d3"))
     user_canvas.tag_bind(ex1_button, "<Leave>", lambda e: user_canvas.itemconfig(ex1_button, fill="#b7b7b7"))
-    user_canvas.tag_bind(ex1_button, "<Button-1>", lambda e: start(ex1, gen_menu_button))
+    user_canvas.tag_bind(ex1_button, "<Button-1>", lambda e: start(ex1))
 
     x1 = x2+(width*0.008)
     y1 = y1
@@ -73,7 +71,7 @@ def main_menu(event=None):
     ex4_text = user_canvas.create_text(width*0.48, (height*0.827)-d, text="Exercise 4", font=("Nueva Std", 28), anchor="c", fill="grey10")
     user_canvas.tag_bind(ex4_button, "<Enter>", lambda e: user_canvas.itemconfig(ex4_button, fill="#d3d3d3"))
     user_canvas.tag_bind(ex4_button, "<Leave>", lambda e: user_canvas.itemconfig(ex4_button, fill="#b7b7b7"))
-    user_canvas.tag_bind(ex4_button, "<Button-1>", lambda e: start(ex4, gen_menu_button))
+    user_canvas.tag_bind(ex4_button, "<Button-1>", lambda e: start(ex4))
 
     x1 = x2+(width*0.008)
     y1 = y1
@@ -111,79 +109,81 @@ def kb_only(event=None):
     user_canvas.delete('all')
     gen_menu_button()
     
-def ex1(event=None):
-    global correct, iterations, score, note
+def start(exercise):
     user_canvas.delete('all')
     gen_menu_button()
-        
-    #Button Creation
-    ex1_buttons = [] #Note Buttons
-    nn = ["C","D","E","F","G","A","B","C#","Eb","F#","G#","Bb"] #Note Names
-    comparators = ["c","d","e","f","g","a","b","cs","ds","fs","gs","as"] #Note Comparators
-
-    w = width        #Screen Width
-    h = height       #Screen Height
-    d = height/2     #Vertical Displacement
-    l = w*0.078      #Square Size
-    ex1_coords = {nn[0]: (w*0.292, h*0.6-d, w*0.292+l, h*0.6-d+l),
-                  nn[1]: (w*0.398, h*0.6-d, w*0.398+l, h*0.6-d+l),
-                  nn[2]: (w*0.502, h*0.6-d, w*0.502+l, h*0.6-d+l),
-                  nn[3]: (w*0.605, h*0.6-d, w*0.605+l, h*0.6-d+l),
-                  nn[4]: (w*0.71, h*0.6-d, w*0.71+l, h*0.6-d+l),
-                  nn[5]: (w*0.815, h*0.6-d, w*0.815+l, h*0.6-d+l),
-                  nn[6]: (w*0.292, h*0.9-d-l, w*0.292+l, h*0.9-d),
-                  nn[7]: (w*0.398, h*0.9-d-l, w*0.398+l, h*0.9-d),
-                  nn[8]: (w*0.502, h*0.9-d-l, w*0.502+l, h*0.9-d),
-                  nn[9]: (w*0.605, h*0.9-d-l, w*0.605+l, h*0.9-d),
-                  nn[10]: (w*0.71, h*0.9-d-l, w*0.71+l, h*0.9-d),
-                  nn[11]: (w*0.815, h*0.9-d-l, w*0.815+l, h*0.9-d)}
-
-    def guess(comparator, event=None):
-        global correct, iterations
-        if comparator == note.name.replace("#","s").lower()[:-1]:
-            correct += 1
-
-        keyboard_canvas.itemconfig(note.key, fill='white' if note in white_notes else 'black')
-
-        iterations += 1
-        update_score()
-        cont()
-
+    exercise.run()
     
-    i = 0
-    for n in nn:
-        ex1_buttons.append(CanvasButton(n, comparators[i]))
-        i +=1
+class GuessButton:
+    def __init__(self, name, coords, comparator, func, args):
+        self.rect = round_rectangle(*coords, fill='#b7b7b7')
+        self.centre = (((coords[0]+coords[2])/2),((coords[1]+coords[3])/2))
+        self.text = user_canvas.create_text(*self.centre, text=name, font=("Times", 36), anchor="c", fill="grey10")
+        user_canvas.tag_bind(self.rect, "<Enter>", lambda e: user_canvas.itemconfig(self.rect, fill="#d3d3d3"))
+        user_canvas.tag_bind(self.rect, "<Leave>", lambda e: user_canvas.itemconfig(self.rect, fill="#b7b7b7"))
+        user_canvas.tag_bind(self.rect, "<Button-1>", lambda e, f=func, a=args: f(*args))
 
 
-    #Scoreboard
-    correct = 0
-    iterations = 0
-    score = "Score:  "+str(correct)+" / "+str(iterations)
-    scoreboard = user_canvas.create_text(ex1_coords[nn[11]][-2], h*0.562-d, text=score, font=("Times", 28), anchor="e", fill="grey10")
+#        user_canvas.tag_bind(self.rect, "<Button-1>", lambda e: some_fucntiion))
 
-    def update_score():
-        global score
-        score = "Score:  "+str(correct)+" / "+str(iterations)
-        user_canvas.itemconfig(scoreboard, text=score)
+#        GuessButton(self, name, coords, comaprator, some_function(args))
 
-    #Exercise start
-    def cont():
-        global note
-        note = random.choice(all_notes)                           
-        keyboard_canvas.itemconfig(note.key, fill='red')
+class Ex1:
+    def __init__(self):
+        self.buttons = []
 
-    cont()
-    
+        w = width        #Screen Width
+        h = height       #Screen Height
+        d = height/2     #Vertical Displacement
+        l = w*0.078      #Square Size
+        self.coords = {note_names[0]: (w*0.292, h*0.6-d, w*0.292+l, h*0.6-d+l),
+                       note_names[1]: (w*0.398, h*0.6-d, w*0.398+l, h*0.6-d+l),
+                       note_names[2]: (w*0.502, h*0.6-d, w*0.502+l, h*0.6-d+l),
+                       note_names[3]: (w*0.605, h*0.6-d, w*0.605+l, h*0.6-d+l),
+                       note_names[4]: (w*0.71, h*0.6-d, w*0.71+l, h*0.6-d+l),
+                       note_names[5]: (w*0.815, h*0.6-d, w*0.815+l, h*0.6-d+l),
+                       note_names[6]: (w*0.292, h*0.9-d-l, w*0.292+l, h*0.9-d),
+                       note_names[7]: (w*0.398, h*0.9-d-l, w*0.398+l, h*0.9-d),
+                       note_names[8]: (w*0.502, h*0.9-d-l, w*0.502+l, h*0.9-d),
+                       note_names[9]: (w*0.605, h*0.9-d-l, w*0.605+l, h*0.9-d),
+                       note_names[10]: (w*0.71, h*0.9-d-l, w*0.71+l, h*0.9-d),
+                       note_names[11]: (w*0.815, h*0.9-d-l, w*0.815+l, h*0.9-d)}
+
+        self.correct = 0
+        self.iterations = 0
+        self.score = "Score:  "+str(self.correct)+" / "+str(self.iterations)
+        self.scoreboardloc = (self.coords[note_names[11]][-2], h*0.562-d)
+        self.comparators = ["c","d","e","f","g","a","b","cs","ds","fs","gs","as"] #Note Comparators
+
+    def run(self, event=None):
+        self.scoreboard = user_canvas.create_text(*self.scoreboardloc, text=self.score, font=("Times", 28), anchor="e", fill="grey10")
+
+        for i, n in enumerate(note_names):
+            self.buttons.append(GuessButton(n, self.coords[n], self.comparators[i]))
+
+        self.cont()
+
+    def guess(self, comparator, event=None):
+       if comparator == self.note.name.replace("#","s").lower()[:-1]:
+           self.correct += 1
+
+       keyboard_canvas.itemconfig(self.note.key, fill='white' if self.note in white_notes else 'black')
+
+       self.iterations += 1
+       self.update_score()
+       self.cont()
+
+    def update_score(self):
+        self.score = "Score:  "+str(self.correct)+" / "+str(self.iterations)
+        user_canvas.itemconfig(self.scoreboard, text=self.score)
+            
+    def cont(self):
+        self.note = random.choice(all_notes)
+        keyboard_canvas.itemconfig(self.note.key, fill='red')
 
 
-def ex2(event=None):
-    user_canvas.delete('all')
-    gen_menu_button()
 
-def ex3(event=None):
-    user_canvas.delete('all')
-    gen_menu_button()
+
 
 def ex4(event=None):
     user_canvas.delete('all')
@@ -209,23 +209,11 @@ def ex4(event=None):
                   il[10]: (w*0.71, h*0.9-d-l, w*0.71+l, h*0.9-d),
                   il[11]: (w*0.815, h*0.9-d-l, w*0.815+l, h*0.9-d)}
 
-class GuessButton:
-    def __init__(self, name):
-        self.name = name
-        self.coords = ex4_coords[name]
-        self.rect = round_rectangle(*self.coords, fill='#b7b7b7')
-        self.centre = (((self.coords[0]+self.coords[2])/2),((self.coords[1]+self.coords[3])/2))
-        self.text = user_canvas.create_text(*self.centre, text=self.name, font=("Times", 36), anchor="c", fill="grey10")
-        user_canvas.tag_bind(self.rect, "<Enter>", lambda e: user_canvas.itemconfig(self.rect, fill="#d3d3d3"))
-        user_canvas.tag_bind(self.rect, "<Leave>", lambda e: user_canvas.itemconfig(self.rect, fill="#b7b7b7"))
-        user_canvas.tag_bind(self.rect, "<Button-1>", lambda e: guess(comparator))
-    
-   
-        
-class Exercise4:
+class Ex4:
     def __init__(self):
         self.coords = []
         self.buttons = []
+        self.note1 = self.note2 = None
         self.interval_list = ["Unison",
                               "Minor 2nd",
                               "Major 2nd",
@@ -239,23 +227,41 @@ class Exercise4:
                               "Minor 7th",
                               "Major 7th",
                               "Octave"]
-        i = 0
-        for interv in self.interval_list:
-            self.buttons.append(CanvasButton(interv))
         
-        def run():
-            self.note1 = random.choice(all_notes)
-            self.note2 = random.choice(all_notes)
-            self.interval = abs(note1.pos-note2.pos)
-            if self.interval <= 12:
-                self.interval = interval_list[self.interval]
-            else:
-                self.interval = interval_list[self.interval-12]
+        self.il = self.interval_list
 
-            self.note1.play()
-            self.note2.play()
-        
-        
+        w = width        #Screen Width
+        h = height       #Screen Height
+        d = height/2     #Vertical Displacement
+        l = w*0.078      #Square Size
+        self.coords = {"Comp.": (w*x, h*x-d, w*x+l, h+x+l)
+                      il[0]: (w*0.292, h*0.6-d, w*0.292+l, h*0.6-d+l),
+                      il[1]: (w*0.398, h*0.6-d, w*0.398+l, h*0.6-d+l),
+                      il[2]: (w*0.502, h*0.6-d, w*0.502+l, h*0.6-d+l),
+                      il[3]: (w*0.605, h*0.6-d, w*0.605+l, h*0.6-d+l),
+                      il[4]: (w*0.71, h*0.6-d, w*0.71+l, h*0.6-d+l),
+                      il[5]: (w*0.815, h*0.6-d, w*0.815+l, h*0.6-d+l),
+                      il[6]: (w*0.292, h*0.9-d-l, w*0.292+l, h*0.9-d),
+                      il[7]: (w*0.398, h*0.9-d-l, w*0.398+l, h*0.9-d),
+                      il[8]: (w*0.502, h*0.9-d-l, w*0.502+l, h*0.9-d),
+                      il[9]: (w*0.605, h*0.9-d-l, w*0.605+l, h*0.9-d),
+                      il[10]: (w*0.71, h*0.9-d-l, w*0.71+l, h*0.9-d),
+                      il[11]: (w*0.815, h*0.9-d-l, w*0.815+l, h*0.9-d),
+                      il[12]: (w*0.815, h*0.9-d-l, w*0.815+l, h*0.9-d)}
+
+    def run(self):
+
+        self.note1, self.note2 = random.sample(all_notes, 2)
+        self.interval = abs(self.note1.pos-self.note2.pos)
+        if self.interval <= 12:
+            self.interval = self.interval_list[self.interval]
+        else:
+            self.interval = self.interval_list[self.interval-12]
+
+        self.note1.play()
+        self.note2.play()
+    
+        print(self.interval)
         
 def ex5(event=None):
     user_canvas.delete('all')
@@ -287,17 +293,16 @@ if __name__ == "__main__":
     user_canvas = Canvas(root, width=width, height=mid, bg = "grey100", highlightthickness=0)
     user_canvas.pack()
 
-
-    ex1 = Ex1(keyboard_canvas, user_canvas)
-
-
-
-
-
-
-
+    ex1 = Ex1()
+    ex4 = Ex4()
+##    ex2 = Ex2()
+##    ex3 = Ex3()
+##    ex4 = Ex4()
+##    ex5 = Ex5()
+##    ex6 = Ex6()
 
 
+    
     #Keyboard Body Dimentions
     x1 = width/10 #Top left corner
     x2 = width-x1 #Top right corner
@@ -383,4 +388,4 @@ if __name__ == "__main__":
     main_menu()
     
     
-root.mainloop()
+    root.mainloop()
