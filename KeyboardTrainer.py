@@ -59,7 +59,7 @@ def main_menu(event=None):
     ex3_text = user_canvas.create_text(width*0.82, (height*0.671)-d, text="Exercise 3", font=("Nueva Std", 28), anchor="c", fill="grey10")
     user_canvas.tag_bind(ex3_button, "<Enter>", lambda e: user_canvas.itemconfig(ex3_button, fill="#d3d3d3"))
     user_canvas.tag_bind(ex3_button, "<Leave>", lambda e: user_canvas.itemconfig(ex3_button, fill="#b7b7b7"))
-    user_canvas.tag_bind(ex3_button, "<Button-1>", lambda e: start(ex3, gen_menu_button))
+    user_canvas.tag_bind(ex3_button, "<Button-1>", lambda e: start(ex3))
 
     d = height/2
     x1 = width*0.4
@@ -80,7 +80,7 @@ def main_menu(event=None):
     ex5_text = user_canvas.create_text(width*0.649, (height*0.827)-d, text="Exercise 5", font=("Nueva Std", 28), anchor="c", fill="grey10")
     user_canvas.tag_bind(ex5_button, "<Enter>", lambda e: user_canvas.itemconfig(ex5_button, fill="#d3d3d3"))
     user_canvas.tag_bind(ex5_button, "<Leave>", lambda e: user_canvas.itemconfig(ex5_button, fill="#b7b7b7"))
-    user_canvas.tag_bind(ex5_button, "<Button-1>", lambda e: start(ex5, gen_menu_button))
+    user_canvas.tag_bind(ex5_button, "<Button-1>", lambda e: start(ex5))
 
     x1 = x2+(width*0.008)
     y1 = y1
@@ -90,7 +90,7 @@ def main_menu(event=None):
     ex6_text = user_canvas.create_text(width*0.82, (height*0.827)-d, text="Exercise 6", font=("Nueva Std", 28), anchor="c", fill="grey10")
     user_canvas.tag_bind(ex6_button, "<Enter>", lambda e: user_canvas.itemconfig(ex6_button, fill="#d3d3d3"))
     user_canvas.tag_bind(ex6_button, "<Leave>", lambda e: user_canvas.itemconfig(ex6_button, fill="#b7b7b7"))
-    user_canvas.tag_bind(ex6_button, "<Button-1>", lambda e: start(ex6, gen_menu_button))
+    user_canvas.tag_bind(ex6_button, "<Button-1>", lambda e: start(ex6))
 
     #Keyboard Only Button
     x1 = (width*0.1)+(height*0.9-height*0.6)+(width*0.008)
@@ -104,6 +104,7 @@ def main_menu(event=None):
     user_canvas.tag_bind(keyboard_button, "<Button-1>", kb_only)
     
     ex4.buttons = []
+    ex3.buttons = []
 
 def kb_only(event=None):
     user_canvas.delete('all')
@@ -123,14 +124,8 @@ class GuessButton:
         user_canvas.tag_bind(self.rect, "<Leave>", lambda e: user_canvas.itemconfig(self.rect, fill="#b7b7b7"))
         if exercise == ex1:
             user_canvas.tag_bind(self.rect, "<Button-1>", lambda e: func(args))
-        if exercise == ex4:
+        if exercise == ex3 or exercise == ex4:
             user_canvas.tag_bind(self.rect, "<Button-1>", lambda e: func(*args))
-
-        
-
-#        user_canvas.tag_bind(self.rect, "<Button-1>", lambda e: some_fucntiion))
-
-#        GuessButton(self, name, coords, comaprator, some_function(args))
 
 class Ex1:
     def __init__(self):
@@ -185,6 +180,145 @@ class Ex1:
     def loop(self):
         self.note = random.choice(all_notes)
         keyboard_canvas.itemconfig(self.note.key, fill='red')
+
+class Ex3:
+    def __init__(self):
+        self.coords = []
+        self.buttons = []
+        self.note1 = self.note2 = None
+        self.score = 0
+        self.interval_list = ["Unison",
+                              "Minor 2nd",
+                              "Major 2nd",
+                              "Minor 3rd",
+                              "Major 3rd",
+                              "Perfect 4th",
+                              "Tritone",
+                              "Perfect 5th",
+                              "Minor 6th",
+                              "Major 6th",
+                              "Minor 7th",
+                              "Major 7th",
+                              "Octave"]
+        
+        self.il = self.interval_list
+
+        w = width        #Screen Width
+        h = height       #Screen Height
+        d = height/2     #Vertical Displacement
+        l = w*0.071      #Square Size
+        363-292
+        self.coords = {"Comp.": (w*0.292, h*0.6-d, w*0.292+l, h*0.6-d+l),
+                      self.il[0]: (w*0.383, h*0.6-d, w*0.383+l, h*0.6-d+l),
+                      self.il[1]: (w*0.472, h*0.6-d, w*0.472+l, h*0.6-d+l),
+                      self.il[2]: (w*0.560, h*0.6-d, w*0.560+l, h*0.6-d+l),
+                      self.il[3]: (w*0.650, h*0.6-d, w*0.650+l, h*0.6-d+l),
+                      self.il[4]: (w*0.739, h*0.6-d, w*0.739+l, h*0.6-d+l),
+                      self.il[5]: (w*0.827, h*0.6-d, w*0.827+l, h*0.6-d+l),
+                      self.il[6]: (w*0.292, h*0.9-d-l, w*0.292+l, h*0.9-d),
+                      self.il[7]: (w*0.383, h*0.9-d-l, w*0.383+l, h*0.9-d),
+                      self.il[8]: (w*0.472, h*0.9-d-l, w*0.472+l, h*0.9-d),
+                      self.il[9]: (w*0.560, h*0.9-d-l, w*0.560+l, h*0.9-d),
+                      self.il[10]: (w*0.650, h*0.9-d-l, w*0.650+l, h*0.9-d),
+                      self.il[11]: (w*0.739, h*0.9-d-l, w*0.739+l, h*0.9-d),
+                      self.il[12]: (w*0.827, h*0.9-d-l, w*0.827+l, h*0.9-d)}
+
+        self.scoreboardloc = (self.coords[self.il[12]][-2], h*0.562-d)
+        self.compbutton_state = False
+        self.note1, self.note2 = random.sample(all_notes, 2)
+
+
+    def toggle_compbutton_state(self):
+        self.compbutton_state = not self.compbutton_state
+
+        if self.compbutton_state:  #On
+            user_canvas.itemconfig(self.compbutton.rect, fill='#26ff4d')
+            user_canvas.tag_bind(self.compbutton.rect, "<Enter>", lambda e: user_canvas.itemconfig(self.compbutton.rect, fill="#7cff94"))
+            user_canvas.tag_bind(self.compbutton.rect, "<Leave>", lambda e: user_canvas.itemconfig(self.compbutton.rect, fill="#26ff4d"))
+
+        else:   #Off
+            user_canvas.itemconfig(self.compbutton.rect, fill='#b7b7b7')
+            user_canvas.tag_bind(self.compbutton.rect, "<Enter>", lambda e: user_canvas.itemconfig(self.compbutton.rect, fill="#d3d3d3"))
+            user_canvas.tag_bind(self.compbutton.rect, "<Leave>", lambda e: user_canvas.itemconfig(self.compbutton.rect, fill="#b7b7b7"))        
+
+        root.update()
+            
+    def run(self):        
+        keyboard_canvas.create_rectangle(0, 0, width, height/2, fill='', outline='', tag='blank')
+        self.buttons.append(GuessButton(self, "Comp.", (self.coords["Comp."]), self.toggle_compbutton_state, (), 24,))
+        self.compbutton = self.buttons[0]
+        
+        for i, n in enumerate(self.il):
+            self.buttons.append(GuessButton(self, n, self.coords[n], self.guess, ((self.interval_list[i])), 26))
+        
+        self.correct = 0
+        self.iterations = 0
+        self.score = "Score:  "+str(self.correct)+" / "+str(self.iterations)
+        self.scoreboard = user_canvas.create_text(*self.scoreboardloc, text=self.score, font=("Times", 28), anchor="e", fill="grey10")
+        self.loop()
+
+    def guess(self, *args):
+        self.iterations += 1
+        self.user_guess = "".join(c for c in args)
+        if self.interval_num <= 12:
+            if self.user_guess == self.interval and self.compbutton_state == False:
+                self.user_guess = True
+                self.correct+=1
+        else:
+            if self.user_guess == self.interval and self.compbutton_state == True:
+                guess = True
+                self.correct+=1
+            
+        self.loop()
+    
+    def update_score(self):
+        self.score = "Score:  "+str(self.correct)+" / "+str(self.iterations)
+        user_canvas.itemconfig(self.scoreboard, text=self.score)
+        root.update()
+
+    def loop(self):
+        self.update_score()
+        user_canvas.itemconfig(self.buttons[0].rect, fill='#b7b7b7')
+
+        for note in (self.note1, self.note2):
+            keyboard_canvas.itemconfig(note.key, fill="white" if note in white_notes else "black")
+
+        self.compbutton_state = False
+        self.note1, self.note2 = random.sample(all_notes, 2)
+        
+        self.interval_num = abs(self.note1.pos-self.note2.pos)
+        if self.interval_num <= 12:
+            self.interval = self.interval_list[self.interval_num]
+        else:
+            self.interval = self.interval_list[self.interval_num-12]
+        
+        keyboard_canvas.itemconfig(self.note1.key, fill="red")
+        keyboard_canvas.itemconfig(self.note2.key, fill="red")
+
+        root.update()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class Ex4:
     def __init__(self):
@@ -286,7 +420,8 @@ class Ex4:
 
         self.compbutton_state = False
 
-        self.note1, self.note2 = random.sample(all_notes, 2)
+        self.note1 = random.choice(all_notes)
+        self.note2 = random.choice(all_notes)
         self.interval_num = abs(self.note1.pos-self.note2.pos)
         if self.interval_num <= 12:
             self.interval = self.interval_list[self.interval_num]
@@ -319,6 +454,7 @@ if __name__ == "__main__":
     user_canvas.pack()
 
     ex1 = Ex1()
+    ex3 = Ex3()
     ex4 = Ex4()
 ##    ex2 = Ex2()
 ##    ex3 = Ex3()
@@ -353,7 +489,7 @@ if __name__ == "__main__":
         whitenote.key = keyboard_canvas.create_rectangle(x1, y1, x2, y2, fill="white", tag=whitenote.name)
         keyboard_canvas.tag_bind(whitenote.name, "<Enter>", lambda e, key=whitenote.key: keyboard_canvas.itemconfig(key, fill="#d3d3d3"))
         keyboard_canvas.tag_bind(whitenote.name, "<Leave>", lambda e, key=whitenote.key: keyboard_canvas.itemconfig(key, fill="white"))
-        keyboard_canvas.tag_bind(whitenote.name, "<ButtonPress-1>", whitenote.press)
+        keyboard_canvas.tag_bind(whitenote.name, "<ButtonPress-1>", whitenote.play)
         x1, x2 = x2, x2+white_note_width
 
 
@@ -370,7 +506,7 @@ if __name__ == "__main__":
         blacknote.key = keyboard_canvas.create_rectangle(x1+(m[i]*white_note_width), y1, x2+(m[i]*white_note_width), y2, fill="black", tag=blacknote.name)
         keyboard_canvas.tag_bind(blacknote.name, "<Enter>", lambda e, key=blacknote.key: keyboard_canvas.itemconfig(key, fill="grey20"))
         keyboard_canvas.tag_bind(blacknote.name, "<Leave>", lambda e, key=blacknote.key: keyboard_canvas.itemconfig(key, fill="black"))
-        keyboard_canvas.tag_bind(blacknote.name, "<ButtonPress-1>", blacknote.press)
+        keyboard_canvas.tag_bind(blacknote.name, "<ButtonPress-1>", blacknote.play)
         i += 1
 
 

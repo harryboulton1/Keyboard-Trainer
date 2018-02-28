@@ -40,7 +40,7 @@ class Key:
 ##        else:
 ##            winsound.Beep(self.freq, 1000)
 
-    def play(self):
+    def play(self, event=None):
         subprocess.call(["afplay", self.location])
             
 
