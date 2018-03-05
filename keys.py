@@ -1,18 +1,18 @@
-import subprocess
-
+import os
 
 frequencies = {"C3":131, "C#3":140, "D3":148, "D#3":156, "E3":165, "F3":175,
                "F#3":185, "G3":196, "G#3":208, "A3":220, "A#3":233, "B3":245,
                "C4":261, "C#4":277, "D4":294, "D#4":311, "E4":330, "F4":349,
                "F#4":370, "G4":392, "G#4":415, "A4":440, "A#4":466, "B4":494, "C5":523}
-
-
-mode = 1
+mode = 0
 class Key:    
     def __init__(self, name):
         self.name = name
         self.freq = frequencies[name]
-        self.location = "sounds/"+name.replace("#","s").lower()+".wav"
+        if os.name == 'nt':
+            self.location = "sounds\\"+name.replace("#","s").lower()+".wav"
+        if os.name == 'posix':
+            self.location = "sounds/"+name.replace("#","s").lower()+".wav"
         self.state = False
         self.key = object
         self.pos = int #EXERCISE 4
@@ -32,17 +32,21 @@ class Key:
             self.state = True
         self.play()
 
-    
-##    import winsound
-##    def play(self):
-##        if mode == 0:
-##            winsound.PlaySound(self.location, winsound.SND_ASYNC)
-##        else:
-##            winsound.Beep(self.freq, 1000)
+    if os.name == 'nt':
+        import winsound
+        def play(self, event=None):
+            print(mode)
 
-    def play(self, event=None):
-        subprocess.call(["afplay", self.location])
-            
+            if mode == 0:
+                winsound.PlaySound(self.location, winsound.SND_ALIAS)
+            else:
+                winsound.Beep(self.freq, 1000)
+
+    if os.name == 'posix':
+        
+        def play(self, event=None):
+            import subprocess
+            subprocess.call(["afplay", self.location])
 
 c3 = Key("C3")
 cs3 = Key("C#3")
